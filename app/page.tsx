@@ -42,7 +42,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false);
   const role = (session?.user as any)?.role || "user";
 
-  // 1. Fetch Todos
+  // Fetching data
   const fetchTodos = useCallback(async () => {
     try {
       const res = await fetch("/api/todos");
@@ -62,7 +62,6 @@ export default function Dashboard() {
     else if (session) fetchTodos();
   }, [session, isPending, router, fetchTodos]);
 
-  // 2. Create Todo (Role: User Only)
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim()) return;
@@ -88,7 +87,6 @@ export default function Dashboard() {
     setLoading(false);
   };
 
-  // 3. Update Status (Role: User Only)
   const handleStatusChange = async (id: string, newStatus: string) => {
     const res = await fetch(`/api/todos/${id}`, {
       method: "PUT",
@@ -100,7 +98,6 @@ export default function Dashboard() {
     else alert("Failed to update status");
   };
 
-  // 4. Delete Todo (ABAC Rules Applied)
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this task?")) return;
 

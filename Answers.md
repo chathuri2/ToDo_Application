@@ -1,15 +1,23 @@
-Correctness
+# Project Overview
 
-The application satisfies the assignment requirements by implementing a role-aware Todo system with correct behavior for create, read, update, and delete actions. The access rules are implemented according to the specified ABAC policies, meaning the final decision is based on role and relevant attributes (ownership and todo status), not only on UI restrictions. A standard user can create todos, view only their own todos, and update only their own todos. Deletion for users is restricted further: they can delete only when the todo is in draft status and belongs to them. A manager can view todos across all users but is blocked from creating, editing, and deleting. An admin can view todos across all users and can delete any todo regardless of status, while remaining restricted from creating and updating. This ensures the application behaves correctly for each role and matches the required authorization behavior.
+### Correctness
+I've made sure the app ticks all the boxes. It's a full CRUD system, but the interesting part is the permissions. I didn't just hide buttons on the frontend; I implemented real ABAC checks on the backend.
+- **Users**: Can create and edit their own stuff. Deletion is tricky—I restricted it to "drafts" only, just like the requirements said.
+- **Managers**: Read-only access to everything.
+- **Admins**: Can see everything and delete anything, but I blocked them from creating tasks to keep their role purely administrative.
 
-Code Quality
+### Code Quality
+I tried to keep things clean and scalable.
+- **Backend**: I put the ABAC policies in the API handlers so we don't repeat logic.
+- **Database**: Using Prisma made the schema updates super easy, especially for the relations.
+- **Structure**: Separation of concerns is key—auth logic is in `lib/`, components are reusable, and pages are just for layout.
 
-The codebase is organized to keep responsibilities separated and easy to maintain. Next.js App Router is used to structure pages and API routes cleanly, Better Auth is used for authentication and session handling, and Prisma manages database access in a consistent, type-safe way. ABAC logic is implemented centrally inside API route handlers so that authorization decisions are not duplicated across different components, which reduces bugs and improves maintainability. The frontend uses TanStack React Query for data fetching and state synchronization, allowing predictable loading/error handling and clean refetching after mutations. Overall, the design supports readability, scalability, and easier future enhancements such as adding filtering, pagination, or additional policy attributes.
+### User Experience
+I wanted it to feel snappy.
+- Used **React Query** so the state updates instantly without pages refreshing.
+- The UI handles errors gracefully—if you try to do something you're not allowed to, it won't crash, just let you know.
+- I used **shadcn/ui** because it looks great out of the box and saves a ton of time on styling.
 
-User Experience
-
-The UI is designed with simplicity and clarity in mind. The login and registration flows are straightforward and provide clear feedback for invalid inputs or authentication errors. The Todo page is structured so users can easily create new items, edit existing ones, and view the current list without confusion. Actions are presented based on the user’s role: buttons that are not permitted are hidden or disabled to prevent users from attempting invalid operations. The design uses shadcn/ui components to maintain consistent spacing, typography, and visual hierarchy, which makes the interface feel modern and professional. React Query improves the experience by keeping data up to date after create/update/delete operations without requiring manual refreshes.
-
-Understanding of Concepts (Especially ABAC)
-
-This project reflects a strong understanding of ABAC by enforcing permissions using both user attributes (role and identity) and resource attributes (todo ownership and status). For example, the delete rule for a user depends on multiple conditions—being the owner and the todo being in draft—which demonstrates attribute-based logic rather than simple RBAC. The most important part is that these checks are enforced server-side in the API layer, making the authorization secure even if the frontend is manipulated. The frontend complements this by adapting the UI to the role for usability, but the backend remains the source of truth for all access decisions. This approach demonstrates practical understanding of secure authorization design and correct implementation with Next.js, Better Auth, and Prisma.
+### Concepts (ABAC)
+Implementing ABAC was the main challenge. It’s not just "Admins can do X"; it's "User can do X *if* they own the resource *and* it's in a specific state."
+I handled this by checking both the user's role (from the session) and the todo's actual data (from the DB) before performing any action. This makes the security solid even if someone bypasses the UI.
