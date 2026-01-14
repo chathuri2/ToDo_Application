@@ -1,0 +1,3 @@
+﻿app/page.tsx(15,3): error TS2305: Module '"lucide-react"' has no exported member 'LayoutTodo'.
+app/page.tsx(43,31): error TS2339: Property 'role' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; email: string; emailVerified: boolean; name: string; image?: string | null | undefined; }'.
+prisma.config.ts(4,35): error TS2307: Cannot find module 'prisma/config' or its corresponding type declarations.
